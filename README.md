@@ -1,4 +1,5 @@
-This repository has all of the files for the game
-Create your own project and just pull/copy all of the files from here
-When you first publish any changes make sure you do it as a test branch first to check that it works, and only upload files that have been changed
-in order to avoid accidentally overwritting other's work
+This repository has all of the files for the game.
+We need to figure out how you can connect it to your unity projects so you can just pull from it and 
+overwritte you project automatically. 
+When you make a change it will automatically save local to your github desktop, make sure you test that it works before you push.
+We need to figure out how test branches work.
