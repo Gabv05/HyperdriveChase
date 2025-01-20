@@ -2,10 +2,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public Transform cameraPivot;          // where the camera pivots around, the gameobject i added to the right of the player 
+ //   public Transform cameraPivot;          // where the camera pivots around, the gameobject i added to the right of the player 
     public Transform cameraTransform;      // the actual camera we are moving
-    private float cameraDistance = 1f;     // how far the camera stays from the pivot
-    private float verticalOffset = 1f;   // height offset of the camera (how high it sits above the player)
 
     private float rotationSpeed = 2f;       // how fast the camera rotates horizontally
     private float verticalSpeed = 2f;       // how fast the camera rotates vertically
@@ -23,7 +21,6 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         RotateGameObject();                // handle the player's rotation based on mouse input
-        PositionCamera();                  // position the camera behind and above the player
     }
 
     // rotate the player left and right, and look up and down based on mouse movement
@@ -32,18 +29,7 @@ public class CameraController : MonoBehaviour
         yaw += Input.GetAxis("Mouse X") * rotationSpeed;     // horizontal rotation (yaw) with mouse movement
         pitch -= Input.GetAxis("Mouse Y") * verticalSpeed;   // vertical rotation (pitch) with mouse movement
         pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle); // keep the pitch within limits so you can't look too far up/down
-        transform.rotation = Quaternion.Euler(0f, yaw, 0f);  // rotate the player only on the Y-axis
+        transform.rotation = Quaternion.Euler(pitch, yaw, 0f);  // rotate the player only on the Y-axis
     }
 
-    // set the camera's position based on player's rotation and pitch
-    void PositionCamera()
-    {
-        // position the camera behind the player with the right offset
-        Vector3 cameraPosition = cameraPivot.position - (Quaternion.Euler(pitch, yaw, 0f) * Vector3.forward * cameraDistance)
-                                 + Vector3.up * verticalOffset;
-
-        // set the camera's position and make it look at the pivot point 
-        cameraTransform.position = cameraPosition;
-        cameraTransform.LookAt(cameraPivot.position + Vector3.up * verticalOffset); // offset to ensure it looks at the right height
-    }
 }

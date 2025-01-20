@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    public float gravity = -9.81f; // Gravity value
-    public float movementSpeed = 5f; // Speed at which the character moves around
+    private float gravity = -20f; // Gravity value
+    private float movementSpeed = 10f; // Speed at which the character moves around
+    private float jumpHeight = 2.0f; //How high the character can jump
 
     private CharacterController characterController; 
     private bool isWalking = false;
@@ -54,6 +55,11 @@ public class CharacterMovement : MonoBehaviour
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f; // Small downward force to keep the character grounded
+
+            if (Input.GetKey(KeyCode.Space)) //if space is pressed
+            {
+                velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //sets the y (vertical) velocity to the jumpheight which makes the player jump
+            }
         }
 
         // Move the character based on the movement direction and speed
