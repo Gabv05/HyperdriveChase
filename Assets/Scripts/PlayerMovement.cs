@@ -8,6 +8,7 @@ public class CharacterMovement : MonoBehaviour
 
     private CharacterController characterController; 
     private bool isWalking = false;
+    private bool isWallRiding = false; //checking if player is wall riding
 
     private Vector3 velocity; // Handles gravity and falling speed
     private bool isGrounded; // To check if we're on solid ground or falling
@@ -65,15 +66,37 @@ public class CharacterMovement : MonoBehaviour
         // Move the character based on the movement direction and speed
         characterController.Move(moveDirection * movementSpeed * Time.deltaTime);
 
-        // Apply gravity over time to the character
-        velocity.y += gravity * Time.deltaTime;
-        characterController.Move(velocity * Time.deltaTime);
-
         // If we're moving, rotate the character to face where we're going
         if (moveDirection != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(cameraForward); // Face the way the camera is pointing
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f); // Smooth rotate
+        }
+
+        //Giving the character the ability to wall ride
+        if(!isWallRiding)
+        {
+            // Apply gravity over time to the character only if player is not riding a wall
+            velocity.y += gravity * Time.deltaTime;
+            characterController.Move(velocity * Time.deltaTime);
+        } 
+    }
+
+    //Detecting collision between player and rideable walls
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.CompareTag("RideableWall"))
+        {
+            isWallRiding = true;
+        } 
+    }
+
+    //Detecting when player jumps off the wall
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("RideableWall"))
+        {
+            isWallRiding = false;
         }
     }
 }
