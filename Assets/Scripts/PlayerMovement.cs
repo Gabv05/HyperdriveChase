@@ -5,14 +5,11 @@ public class CharacterMovement : MonoBehaviour
     private float gravity = -20f; // Gravity value
     private float movementSpeed = 10f; // Speed at which the character moves around
     private float jumpHeight = 2.0f; //How high the character can jump
-    private float slideCooldown = 10f; //Amount of time the player has to wait before being able to slide again
-    private float slideTimer = 0f; //Tracks the time it took since the last slide
+    private float slidePower = 1.5f; //how fast the player can slide
 
     private CharacterController characterController; 
     private bool isWalking = false; //checking if player is walking (?)
     private bool isWallRiding = false; //checking if player is wall riding
-    private bool canSlide = true; //checking if player can slide
-
 
     private Vector3 velocity; // Handles gravity and falling speed
     private bool isGrounded; // To check if we're on solid ground or falling
@@ -57,6 +54,7 @@ public class CharacterMovement : MonoBehaviour
 
         // Check if the character is on the ground
         isGrounded = characterController.isGrounded;
+
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f; // Small downward force to keep the character grounded
@@ -66,18 +64,18 @@ public class CharacterMovement : MonoBehaviour
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //sets the y (vertical) velocity to the jumpheight which makes the player jump
             }
 
+            if (Input.GetKey(KeyCode.LeftShift)) //if shift is pressed and player can slide
+            {
+                characterController.Move(moveDirection * movementSpeed * slidePower * Time.deltaTime); //move the player at a slighlty higher/lower speed depending on slide power
+                transform.rotation = Quaternion.Euler(-100, 0, 0);
 
-            //TODO incomplete - need to figure out a way to move player more smoothly using a speed boost(maybe a while loop) and make the player model rotate while sliding
-            if(Input.GetKey(KeyCode.LeftShift) && canSlide) //if shift is pressed and player can slide
+                if (slidePower >= -0.5) {
+                    slidePower -= 0.1f; //gradually decrease the sliding speed of the player until a certain point
+                }
+
+            } else
             {
-                Debug.Log("SLIDE");
-                characterController.Move(moveDirection * movementSpeed * 20 * Time.deltaTime); //move the player at a slighlty higher speed
-                canSlide = false; //prevents player from spamming shift
-                slideTimer = 0f; //resets cooldown
-            } else if (!canSlide) //after the player used the slide
-            {
-                slideTimer += Time.deltaTime; //increment the cooldown timer
-                canSlide = slideTimer >= slideCooldown; //set canSlide to true once the cooldown timer is above the cooldown limit so player can slide again
+                slidePower = 1.5f; //reset sliding power once the player stops sliding
             }
         }
         // Move the character based on the movement direction and speed
@@ -116,4 +114,5 @@ public class CharacterMovement : MonoBehaviour
             isWallRiding = false;
         }
     }
+
 }
