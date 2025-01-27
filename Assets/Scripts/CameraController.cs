@@ -13,9 +13,12 @@ public class CameraController : MonoBehaviour
     private float yaw = 0f;                // stores the horizontal rotation angle
     private float pitch = -25f;            // stores the vertical rotation angle (starts looking down a bit)
 
+    private GameObject player;
+
     void Start()
     {
         yaw = transform.eulerAngles.y;     // initialize the yaw to current horizontal rotation
+        player = GameObject.Find("Player"); //getting the player component
     }
 
     void Update()
@@ -29,7 +32,12 @@ public class CameraController : MonoBehaviour
         yaw += Input.GetAxis("Mouse X") * rotationSpeed;     // horizontal rotation (yaw) with mouse movement
         pitch -= Input.GetAxis("Mouse Y") * verticalSpeed;   // vertical rotation (pitch) with mouse movement
         pitch = Mathf.Clamp(pitch, minVerticalAngle, maxVerticalAngle); // keep the pitch within limits so you can't look too far up/down
-        transform.rotation = Quaternion.Euler(pitch, yaw, 0f);  // rotate the player only on the Y-axis
+
+        if (player.GetComponent<CharacterMovement>().returnSlide() == false) { //if player is not sliding, rotate normally, otherwise rotate the player further down to appear like you are sliding
+            player.transform.rotation = Quaternion.Euler(pitch, yaw, 0f);  // rotate the player only on the Y-axis
+        } else {
+            player.transform.rotation = Quaternion.Euler(pitch-50, yaw, 0f);
+        }
     }
 
 }

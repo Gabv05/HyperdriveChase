@@ -10,6 +10,7 @@ public class CharacterMovement : MonoBehaviour
     private CharacterController characterController; 
     private bool isWalking = false; //checking if player is walking (?)
     private bool isWallRiding = false; //checking if player is wall riding
+    private bool isSliding = false; //checking if the player is sliding
 
     private Vector3 velocity; // Handles gravity and falling speed
     private bool isGrounded; // To check if we're on solid ground or falling
@@ -66,8 +67,8 @@ public class CharacterMovement : MonoBehaviour
 
             if (Input.GetKey(KeyCode.LeftShift)) //if shift is pressed and player can slide
             {
+                isSliding = true;
                 characterController.Move(moveDirection * movementSpeed * slidePower * Time.deltaTime); //move the player at a slighlty higher/lower speed depending on slide power
-                transform.rotation = Quaternion.Euler(-100, 0, 0);
 
                 if (slidePower >= -0.5) {
                     slidePower -= 0.1f; //gradually decrease the sliding speed of the player until a certain point
@@ -75,7 +76,11 @@ public class CharacterMovement : MonoBehaviour
 
             } else
             {
-                slidePower = 1.5f; //reset sliding power once the player stops sliding
+                if (slidePower <= 1.5f) {
+                    slidePower = 1.5f; //reset sliding power once the player stops sliding
+                }
+
+                isSliding = false;
             }
         }
         // Move the character based on the movement direction and speed
@@ -115,4 +120,9 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
+    //return wether the player is sliding or not
+    public bool returnSlide()
+    {
+        return isSliding;
+    }
 }
