@@ -19,6 +19,7 @@ public class CameraController : MonoBehaviour
     {
         yaw = transform.eulerAngles.y;     // initialize the yaw to current horizontal rotation
         player = GameObject.Find("Player"); //getting the player component
+        Cursor.visible = false; //make cursor invisible
     }
 
     void Update()
