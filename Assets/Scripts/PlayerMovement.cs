@@ -2,18 +2,21 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    private float gravity = -20f; // Gravity value
-    private float movementSpeed = 10f; // Speed at which the character moves around
-    private float jumpHeight = 2.0f; //How high the character can jump
-    private float slidePower = 1.5f; //how fast the player can slide
 
+    //float vlaues (mostly for physics and movement)
+    private float gravity = -20f; // gravity value
+    private float movementSpeed = 10f; // speed at which the character moves around
+    private float jumpHeight = 2.0f; //how high the character can jump
+    private float slidePower = 1.5f; //how fast the player can slide
+    private Vector3 velocity; // handles gravity and falling speed
+
+    //boolean values to check for certain player actions
     private CharacterController characterController; 
     private bool isWalking = false; //checking if player is walking (?)
     private bool isWallRiding = false; //checking if player is wall riding
     private bool isSliding = false; //checking if the player is sliding
-
-    private Vector3 velocity; // Handles gravity and falling speed
-    private bool isGrounded; // To check if we're on solid ground or falling
+    private bool isGrounded; // to check if we're on solid ground or falling
+    private bool canDoubleJump; //check if player is allowed to double jump
 
     public Transform cameraTransform; 
 
@@ -80,7 +83,11 @@ public class CharacterMovement : MonoBehaviour
                     slidePower = 1.5f; //reset sliding power once the player stops sliding
                 }
 
-                isSliding = false;
+                //if statement check so the isSliding is not constantly being set to false every frame
+                if (isSliding)
+                {
+                    isSliding = false;
+                }
             }
         }
         // Move the character based on the movement direction and speed
@@ -124,5 +131,12 @@ public class CharacterMovement : MonoBehaviour
     public bool returnSlide()
     {
         return isSliding;
+    }
+
+    //return wether the player is wall riding or not
+    //TODO need to make player rotate slightly to the side when wall riding
+    public bool returnWallRiding()
+    {
+        return isWallRiding;
     }
 }
