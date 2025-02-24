@@ -1,30 +1,3 @@
-using UnityEngine;
-
-public class triggerScript : MonoBehaviour
-{
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public GameObject targetObject; // Reference to the other GameObject
-
-    void OnTriggerEnter(Collider other)
-    {
-        // Access the script on the target object
-        loadNewPathScript targetScript = targetObject.GetComponent<loadNewPathScript>();
-
-
-        // Call the function on the target object
-        Debug.Log("worked triggeer side"); 
-        targetScript.SpawnPrefab();
-
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f075610f4e40448c5321cc2cfd1bf7fa4950e013a2cd61bb8c246b453e6a2612
+size 683
