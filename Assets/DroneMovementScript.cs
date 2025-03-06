@@ -22,13 +22,20 @@ public class DroneMovementScript : MonoBehaviour
     {
         Vector3 playerPosition = player.transform.position; //get players position
         Vector3 dronePosition = transform.position; //get drones position
-        Vector3 direction = playerPosition - dronePosition; //get direction to player 
-        direction.Normalize(); //normalize direction
-        if (Vector3.Distance(playerPosition, dronePosition) > 5.0f) {  //if distance between player and drone is greater than 20
-            transform.position += direction * droneStats.droneSpeed * Time.deltaTime; //move drone towards player
+        droneStats.directionToPlayer = playerPosition - dronePosition; //get direction to player
+        droneStats.distanceFromPlayer = Vector3.Distance(playerPosition, dronePosition); //get distance from player
+        droneStats.directionToPlayer.Normalize(); //normalize direction
+        if (droneStats.distanceFromPlayer > 5.0f) {  //if distance between player and drone is greater than 20
+            transform.position += droneStats.directionToPlayer * droneStats.droneSpeed * Time.deltaTime; //move drone towards player
         } 
         
-        Quaternion rotation = Quaternion.LookRotation(direction); //get rotation to look at player
+        if(Vector3.Distance(playerPosition, dronePosition) < 20.0f) { //if distance between player and drone is less than 20
+            droneStats.inRange = true; //set inRange to true
+        } else {
+            droneStats.inRange = false; //set inRange to false
+        }
+
+        Quaternion rotation = Quaternion.LookRotation(droneStats.directionToPlayer); //get rotation to look at player
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * droneStats.rotationSpeed); //rotate drone to look at player
     }
 }
