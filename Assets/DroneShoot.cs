@@ -21,10 +21,11 @@ public class DroneShoot : MonoBehaviour
     {
         if (droneStats.inRange) {
             shootLaser();
-        } /*else {
+            droneStats.isFiring = true;
+        } else {
                 Destroy(currentLaser);
         }
-        */
+        
     }
 
     void shootLaser() {
