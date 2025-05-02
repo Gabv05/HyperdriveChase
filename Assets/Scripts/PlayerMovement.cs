@@ -8,9 +8,12 @@ public class CharacterMovement : MonoBehaviour
     private float slidePower = 1.5f; //how fast the player can slide
 
     private CharacterController characterController; 
-    private bool isWalking = false; //checking if player is walking (?)
-    private bool isWallRiding = false; //checking if player is wall riding
-    private bool isSliding = false; //checking if the player is sliding
+    public bool isRunning = false; //checking if player is walking (?)
+    public bool isWallRiding = false; //checking if player is wall riding
+    public bool isSliding = false; //checking if the player is sliding
+    public bool isAttacking = false; //checking if the player is attacking
+    public bool isIdle = false; //checking if the player is idle
+    public bool damageTaken = false; //checking if player took damage
 
     private Vector3 velocity; // Handles gravity and falling speed
     private bool isGrounded; // To check if we're on solid ground or falling
@@ -25,6 +28,8 @@ public class CharacterMovement : MonoBehaviour
     void FixedUpdate()
     {
         MoveCharacter(); // move character evry frame
+        setAnimator(); //update animation bools every frame
+        attack(); //check if player is attacking every frame
     }
 
     void MoveCharacter()
@@ -39,7 +44,7 @@ public class CharacterMovement : MonoBehaviour
             inputVector.Normalize(); // if the player is pressing too many keys
         }
 
-        isWalking = inputVector.magnitude > 0; // If we're pressing something the character is walking
+        isRunning = inputVector.magnitude > 0; // If we're pressing something the character is walking
 
         // Get the direction the camera is facing
         Vector3 cameraForward = cameraTransform.forward;
@@ -124,5 +129,24 @@ public class CharacterMovement : MonoBehaviour
     public bool returnSlide()
     {
         return isSliding;
+    }
+
+    private void attack()
+    {
+        if (Input.GetKey(KeyCode.Mouse0)) //if left mouse button is pressed
+        {
+            isAttacking = true; //set the isAttacking parameter to true
+        }
+    }
+
+    private void setAnimator()
+    {
+        Animator animator = GetComponent<Animator>(); // get the Animator component
+        animator.SetBool("isRunning", isRunning); // set the isRunning parameter
+        animator.SetBool("isWallRiding", isWallRiding); // set the isWallRiding parameter
+        animator.SetBool("isSliding", isSliding); // set the isSliding parameter
+        animator.SetBool("isAttacking", isAttacking); // set the isAttacking parameter
+        animator.SetBool("isIdle", isIdle); // set the isIdle parameter
+        animator.SetBool("damageTaken", damageTaken); // set the damageTaken paramete
     }
 }
