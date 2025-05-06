@@ -14,6 +14,7 @@ public class CharacterMovement : MonoBehaviour
     public bool isAttacking = false; //checking if the player is attacking
     public bool isIdle = false; //checking if the player is idle
     public bool damageTaken = false; //checking if player took damage
+    public bool isJumping = false; //checking if player is jumping
 
     private Vector3 velocity; // Handles gravity and falling speed
     private bool isGrounded; // To check if we're on solid ground or falling
@@ -25,7 +26,7 @@ public class CharacterMovement : MonoBehaviour
         characterController = GetComponentInParent<CharacterController>(); // Grab the CharacterController from the parent object
     }
 
-    void FixedUpdate()
+    void Update()
     {
         MoveCharacter(); // move character evry frame
         setAnimator(); //update animation bools every frame
@@ -59,7 +60,11 @@ public class CharacterMovement : MonoBehaviour
         Vector3 moveDirection = cameraForward * inputVector.y + cameraRight * inputVector.x;
 
         // Check if the character is on the ground
-        isGrounded = characterController.isGrounded;
+        isGrounded = checkGrounded();
+        if (isGrounded)
+        {
+            isJumping = false; //if play is grounded set bool to false;
+        }
 
         if (isGrounded && velocity.y < 0)
         {
@@ -68,6 +73,8 @@ public class CharacterMovement : MonoBehaviour
             if (Input.GetKey(KeyCode.Space)) //if space is pressed
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //sets the y (vertical) velocity to the jumpheight which makes the player jump
+                isJumping = true;
+
             }
 
             if (Input.GetKey(KeyCode.LeftShift)) //if shift is pressed and player can slide
@@ -136,7 +143,18 @@ public class CharacterMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse0)) //if left mouse button is pressed
         {
             isAttacking = true; //set the isAttacking parameter to true
+
         }
+    }
+
+    public void endAttackAnimation()
+    {
+        isAttacking = false;
+    }
+
+    private bool checkGrounded()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit);
     }
 
     private void setAnimator()
