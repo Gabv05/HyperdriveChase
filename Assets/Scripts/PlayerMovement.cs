@@ -19,11 +19,14 @@ public class CharacterMovement : MonoBehaviour
     private Vector3 velocity; // Handles gravity and falling speed
     private bool isGrounded; // To check if we're on solid ground or falling
 
-    public Transform cameraTransform; 
+    public Transform cameraTransform;
+
+    Animator animator; // animator component
 
     void Start()
     {
         characterController = GetComponentInParent<CharacterController>(); // Grab the CharacterController from the parent object
+        animator = GetComponent<Animator>(); // Assign animator component
     }
 
     void Update()
@@ -47,6 +50,7 @@ public class CharacterMovement : MonoBehaviour
 
         isRunning = inputVector.magnitude > 0; // If we're pressing something the character is walking
 
+
         // Get the direction the camera is facing
         Vector3 cameraForward = cameraTransform.forward;
         cameraForward.y = 0;  // Ignore any weird up/down angles
@@ -59,21 +63,26 @@ public class CharacterMovement : MonoBehaviour
         // Combine camera's forward and right directions with player input
         Vector3 moveDirection = cameraForward * inputVector.y + cameraRight * inputVector.x;
 
+        float forwardAmount = Vector3.Dot(cameraTransform.forward, moveDirection.normalized); //get float for forward amount - for blend tree animations
+        animator.SetFloat("forwardAmount", forwardAmount); //set the forward amount to the animator
+
+        bool wasGrounded = isGrounded; // Store the previous grounded state for comparison
         // Check if the character is on the ground
         isGrounded = checkGrounded();
-        if (isGrounded)
+        if (isGrounded && !wasGrounded)
         {
-            isJumping = false; //if play is grounded set bool to false;
+            isJumping = false; //if play just landed set isJumping to false
         }
 
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f; // Small downward force to keep the character grounded
 
-            if (Input.GetKey(KeyCode.Space)) //if space is pressed
+            if (Input.GetKeyDown(KeyCode.Space)) //if space is pressed
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //sets the y (vertical) velocity to the jumpheight which makes the player jump
                 isJumping = true;
+                isGrounded = false; //set isGrounded to false so the player can't jump again
 
             }
 
@@ -143,6 +152,7 @@ public class CharacterMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.Mouse0)) //if left mouse button is pressed
         {
             isAttacking = true; //set the isAttacking parameter to true
+            Invoke(nameof(endAttackAnimation), 1.5f); // Auto-reset after animation length
 
         }
     }
@@ -159,12 +169,10 @@ public class CharacterMovement : MonoBehaviour
 
     private void setAnimator()
     {
-        Animator animator = GetComponent<Animator>(); // get the Animator component
         animator.SetBool("isRunning", isRunning); // set the isRunning parameter
-        animator.SetBool("isWallRiding", isWallRiding); // set the isWallRiding parameter
-        animator.SetBool("isSliding", isSliding); // set the isSliding parameter
         animator.SetBool("isAttacking", isAttacking); // set the isAttacking parameter
-        animator.SetBool("isIdle", isIdle); // set the isIdle parameter
-        animator.SetBool("damageTaken", damageTaken); // set the damageTaken paramete
+        animator.SetBool("isJumping", isJumping); // set the jumping parameter
+
+        // animator.SetBool("isSliding", isSliding); // set the isSliding parameter (need slide animation)
     }
 }
