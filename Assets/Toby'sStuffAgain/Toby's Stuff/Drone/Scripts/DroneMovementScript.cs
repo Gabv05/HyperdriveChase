@@ -25,11 +25,11 @@ public class DroneMovementScript : MonoBehaviour
         droneStats.directionToPlayer = playerPosition - dronePosition; //get direction to player
         droneStats.distanceFromPlayer = Vector3.Distance(playerPosition, dronePosition); //get distance from player
         droneStats.directionToPlayer.Normalize(); //normalize direction
-        if (droneStats.distanceFromPlayer > 5.0f) {  //if distance between player and drone is greater than 20
+        if (droneStats.distanceFromPlayer > 5.0f && !droneStats.isFiring) {  //if distance between player and drone is greater than 5 and drone isn't firing
             transform.position += droneStats.directionToPlayer * droneStats.droneSpeed * Time.deltaTime; //move drone towards player
         } 
         
-        if(Vector3.Distance(playerPosition, dronePosition) < 20.0f) { //if distance between player and drone is less than 20
+        if(Vector3.Distance(playerPosition, dronePosition) < 10.0f) { //if distance between player and drone is less than 10
             droneStats.inRange = true; //set inRange to true
         } else {
             droneStats.inRange = false; //set inRange to false

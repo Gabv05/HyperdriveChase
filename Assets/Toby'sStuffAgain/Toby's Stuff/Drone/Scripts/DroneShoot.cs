@@ -22,8 +22,10 @@ public class DroneShoot : MonoBehaviour
         if (droneStats.inRange) {
             shootLaser();
             droneStats.isFiring = true;
+            //add player damage logic
         } else {
                 Destroy(currentLaser);
+            droneStats.isFiring = false;
         }
         
     }

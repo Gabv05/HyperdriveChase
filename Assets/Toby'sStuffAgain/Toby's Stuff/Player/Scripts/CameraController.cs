@@ -4,7 +4,9 @@ public class CameraController : MonoBehaviour
 {
  //   public Transform cameraPivot;          // where the camera pivots around, the gameobject i added to the right of the player 
     public Transform cameraTransform; // the actual camera we are moving
+    //TODO
     public Transform cameraAnchor; //gameobject camera is attached to (for stability)
+    //
 
     private float rotationSpeed = 2f;       // how fast the camera rotates horizontally
     private float verticalSpeed = 2f;       // how fast the camera rotates vertically
@@ -14,7 +16,9 @@ public class CameraController : MonoBehaviour
     private float yaw = 0f;                // stores the horizontal rotation angle
     private float pitch = -25f;            // stores the vertical rotation angle (starts looking down a bit)
 
+    //TODO
     public Vector3 cameraOffset = new Vector3(0f, 0.01f, 0.01f); // camera offset to anchor
+    //
 
 
     private GameObject player;
@@ -24,10 +28,12 @@ public class CameraController : MonoBehaviour
         yaw = transform.eulerAngles.y;     // initialize the yaw to current horizontal rotation
         player = GameObject.Find("Player"); //getting the player component
         Cursor.visible = false; //make cursor invisible
+
+        //TODO
         Cursor.lockState = CursorLockMode.Locked; //lock the cursor to the center of the screen
 
         cameraTransform.position = cameraAnchor.position + cameraOffset; // initially set the camera position to the anchor's position plus the offset
-
+        //
     }
 
     void Update()
@@ -48,10 +54,12 @@ public class CameraController : MonoBehaviour
             player.transform.rotation = Quaternion.Euler(pitch-50, yaw, 0f);
         }
 
+        //TODO
         cameraAnchor.rotation = Quaternion.Euler(pitch, yaw, 0f); // rotate the camera anchor to match the player's rotation
         cameraTransform.localRotation = Quaternion.Euler(pitch, 0f, 0f); // Rotate the camera vertically (pitch)
 
         cameraTransform.position = cameraAnchor.position + cameraOffset; // set the camera position to the anchor's position plus the offset
+        //
     }
 
 }

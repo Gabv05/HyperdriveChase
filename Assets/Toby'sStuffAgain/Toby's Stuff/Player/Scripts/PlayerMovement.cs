@@ -8,32 +8,39 @@ public class CharacterMovement : MonoBehaviour
     private float slidePower = 1.5f; //how fast the player can slide
 
     private CharacterController characterController; 
-    public bool isRunning = false; //checking if player is walking (?)
     public bool isWallRiding = false; //checking if player is wall riding
     public bool isSliding = false; //checking if the player is sliding
     public bool isAttacking = false; //checking if the player is attacking
-    public bool isIdle = false; //checking if the player is idle
+    //TODO
     public bool damageTaken = false; //checking if player took damage
     public bool isJumping = false; //checking if player is jumping
+    public bool isTalking = false; //checking if player is talking (add logic to trigger animation)
+    //
 
     private Vector3 velocity; // Handles gravity and falling speed
     private bool isGrounded; // To check if we're on solid ground or falling
 
     public Transform cameraTransform;
 
+    //TODO
     Animator animator; // animator component
+    //
 
     void Start()
     {
         characterController = GetComponentInParent<CharacterController>(); // Grab the CharacterController from the parent object
+        //TODO
         animator = GetComponent<Animator>(); // Assign animator component
+        //
     }
 
     void Update()
     {
         MoveCharacter(); // move character evry frame
+        //TODO
         setAnimator(); //update animation bools every frame
         attack(); //check if player is attacking every frame
+        //
     }
 
     void MoveCharacter()
@@ -48,9 +55,6 @@ public class CharacterMovement : MonoBehaviour
             inputVector.Normalize(); // if the player is pressing too many keys
         }
 
-        isRunning = inputVector.magnitude > 0; // If we're pressing something the character is walking
-
-
         // Get the direction the camera is facing
         Vector3 cameraForward = cameraTransform.forward;
         cameraForward.y = 0;  // Ignore any weird up/down angles
@@ -63,10 +67,14 @@ public class CharacterMovement : MonoBehaviour
         // Combine camera's forward and right directions with player input
         Vector3 moveDirection = cameraForward * inputVector.y + cameraRight * inputVector.x;
 
+        //TODO
         float forwardAmount = Vector3.Dot(cameraTransform.forward, moveDirection.normalized); //get float for forward amount - for blend tree animations
         animator.SetFloat("forwardAmount", forwardAmount); //set the forward amount to the animator
 
         bool wasGrounded = isGrounded; // Store the previous grounded state for comparison
+
+        //
+
         // Check if the character is on the ground
         isGrounded = checkGrounded();
         if (isGrounded && !wasGrounded)
@@ -81,8 +89,10 @@ public class CharacterMovement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space)) //if space is pressed
             {
                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); //sets the y (vertical) velocity to the jumpheight which makes the player jump
+                //TODO
                 isJumping = true;
                 isGrounded = false; //set isGrounded to false so the player can't jump again
+                //
 
             }
 
@@ -123,12 +133,14 @@ public class CharacterMovement : MonoBehaviour
         }
     }
 
-    //Detecting collision between player and rideable walls
+    /*
+     //Detecting collision between player and rideable walls
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.CompareTag("RideableWall"))
         {
             isWallRiding = true;
+            Debug.Log("Wall Riding"); //for debugging purposes
         } 
     }
 
@@ -140,6 +152,21 @@ public class CharacterMovement : MonoBehaviour
             isWallRiding = false;
         }
     }
+    */
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.gameObject.CompareTag("RideableWall"))
+        {
+            isWallRiding = true;
+            Debug.Log("Wall Riding"); //for debugging purposes
+        }
+        else
+        {
+            isWallRiding = false; //if player is not touching the wall, set isWallRiding to false
+            Debug.Log("Not Wall Riding"); //for debugging purposes
+        }
+    }
 
     //return wether the player is sliding or not
     public bool returnSlide()
@@ -147,6 +174,7 @@ public class CharacterMovement : MonoBehaviour
         return isSliding;
     }
 
+    //TODO
     private void attack()
     {
         if (Input.GetKey(KeyCode.Mouse0)) //if left mouse button is pressed
@@ -164,15 +192,23 @@ public class CharacterMovement : MonoBehaviour
 
     private bool checkGrounded()
     {
-        return Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit);
+        float groundCheckDistance = 0.1f; // Distance to check for ground
+        return Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundCheckDistance);
+        //return characterController.isGrounded; // Use CharacterController's built-in method to check if grounded
     }
 
     private void setAnimator()
     {
-        animator.SetBool("isRunning", isRunning); // set the isRunning parameter
         animator.SetBool("isAttacking", isAttacking); // set the isAttacking parameter
         animator.SetBool("isJumping", isJumping); // set the jumping parameter
-
+        animator.SetBool("isTalking", isTalking); // need to add talking logic
         // animator.SetBool("isSliding", isSliding); // set the isSliding parameter (need slide animation)
+    }
+
+    //
+
+    public bool returnWallRiding()
+    {
+        return isWallRiding;
     }
 }
